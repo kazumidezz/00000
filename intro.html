@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Love Letter Reveal</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #ff66b2, #ffccff);
+            overflow: hidden;
+            flex-direction: column; /* Stack elements vertically */
+        }
+        .loader {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            max-width: 90%;
+        }
+        /* Image style for cinnamoroll.png */
+        .cinnamoroll-image {
+            width: 120px; /* Adjust size */
+            margin-bottom: 20px; /* Space between the image and progress bar */
+        }
+        /* Progress bar container */
+        .progress-container {
+            width: 100%; /* Full width */
+            max-width: 1000px; /* Allow it to stretch wide */
+            height: 30px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+        /* Progress bar with more visible color */
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: #ff0099; /* Bright pink color */
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 10px;
+            transition: width 0.2s ease-out;
+        }
+        /* Heart emoticons with black color */
+        .heart {
+            font-size: 24px;
+            color: #000000; /* Black color for the hearts */
+            animation: bounce 1s ease-in-out infinite, glow 1.5s ease-in-out infinite;
+            margin-left: 4px; /* Add spacing between hearts */
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        @keyframes glow {
+            0%, 100% { text-shadow: 0 0 10px #000000, 0 0 20px #000000; }
+            50% { text-shadow: 0 0 30px #000000, 0 0 40px #000000; }
+        }
+        /* Percentage text with better contrast and fade effect */
+        .percent {
+            font-size: 30px;
+            color: #4c1f3c; /* Darker pink for text contrast */
+            margin-top: 15px;
+            font-weight: bold;
+            opacity: 0;
+            animation: fadeIn 1s forwards;
+        }
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+        .button-container {
+            margin-top: 20px;
+            display: none; /* Initially hidden */
+        }
+        /* Button styles */
+        .reveal-button {
+            padding: 12px 24px;
+            font-size: 18px;
+            background-color: #ff66b2; /* Bright pink */
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+        }
+        .reveal-button:hover {
+            background-color: #ff3385;
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(255, 51, 133, 0.5);
+        }
+
+        /* Responsive design for mobile */
+        @media (max-width: 600px) {
+            .cinnamoroll-image {
+                width: 80px; /* Reduce image size for mobile */
+                margin-bottom: 15px;
+            }
+
+            .progress-container {
+                width: 100%; /* Full width on mobile */
+                max-width: none; /* No max-width on mobile */
+                height: 25px; /* Smaller height for the bar */
+            }
+            .progress-bar {
+                height: 100%;
+                padding: 0 5px; /* Reduced padding on mobile */
+            }
+            .percent {
+                font-size: 24px; /* Smaller font size for percentage */
+                margin-top: 10px;
+            }
+            .reveal-button {
+                font-size: 16px; /* Smaller button text */
+                padding: 10px 20px; /* Adjusted button padding */
+            }
+        }
+
+        /* Further adjustments for very small screens */
+        @media (max-width: 400px) {
+            .cinnamoroll-image {
+                width: 60px; /* Smaller image on very small screens */
+                margin-bottom: 10px;
+            }
+
+            .percent {
+                font-size: 20px; /* Even smaller font size */
+            }
+
+            .reveal-button {
+                font-size: 14px; /* Smaller button text for tiny screens */
+                padding: 8px 16px; /* Smaller button padding */
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="loader">
+        <!-- Add the image of cinnamoroll.png -->
+        <img src="cinnamoroll.png" alt="Cinnamoroll" class="cinnamoroll-image">
+        
+        <!-- Progress bar container -->
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <!-- Percentage text -->
+        <div class="percent" id="percent">0%</div>
+        <div class="button-container" id="buttonContainer">
+            <a href="love.html">
+                <button class="reveal-button">Click Me</button>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        let percent = 0;
+        const progressBar = document.getElementById('progressBar');
+        const percentText = document.getElementById('percent');
+        const buttonContainer = document.getElementById('buttonContainer');
+
+        // Function to simulate the loading process and update the progress bar
+        function updateLoading() {
+            if (percent < 100) {
+                percent += 1;
+                progressBar.style.width = percent + '%'; // Update the width of the progress bar
+                percentText.textContent = percent + '%'; // Update the percentage text
+
+                // Add hearts as progress fills
+                const heartCount = Math.floor(percent / 5); // Add one heart for every 5% completed
+                progressBar.innerHTML = ''; // Reset the progress bar to clear previous hearts
+                for (let i = 0; i < heartCount; i++) {
+                    const heart = document.createElement('div');
+                    heart.classList.add('heart');
+                    heart.innerHTML = '&hearts;'; // Use the heart emoticon
+                    progressBar.appendChild(heart);
+                }
+
+                setTimeout(updateLoading, 50); // Increase every 50ms
+            } else {
+                // Show the button when loading is complete
+                buttonContainer.style.display = 'block';
+            }
+        }
+
+        // Start the loading simulation
+        updateLoading();
+    </script>
+    
+</body>
+</html>
